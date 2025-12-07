@@ -1,0 +1,58 @@
+:root {
+  /* Refined Light Mode (Cleaner / Neutral) */
+  --color-bg-page: #f8fafc;
+  /* Light Slate/Gray */
+  --color-bg-card: #ffffff;
+  /* Pure White */
+  --color-accent: #D47E30;
+  /* Orange (Kept) */
+  --color-accent-hover: #b96a24;
+  /* Darker Orange */
+  --color-text-main: #334155;
+  /* Dark Slate */
+  --color-text-light: #64748b;
+  /* Medium Slate */
+  --color-border: #e2e8f0;
+  /* Light Gray Border */
+  --color-input-bg: #f1f5f9;
+  /* Very Light Slate */
+  --color-shadow: rgba(15, 23, 42, 0.08);
+}
+
+/* Dark Mode Overrides */
+[data-theme='dark'] {
+  --color-bg-page: #0f172a;
+  /* Dark Slate */
+  --color-bg-card: #1e293b;
+  /* Dark Card */
+  --color-accent: #fb923c;
+  /* Brighter Orange for dark bg */
+  --color-accent-hover: #ea580c;
+  /* Deep Orange */
+  --color-text-main: #e2e8f0;
+  /* Light Gray */
+  --color-text-light: #cbd5e1;
+  /* Muted Gray */
+  --color-border: #334155;
+  /* Slate Border */
+  --color-input-bg: #0f172a;
+  /* Dark Input */
+  --color-shadow: rgba(0, 0, 0, 0.3);
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

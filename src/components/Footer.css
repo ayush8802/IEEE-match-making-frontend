@@ -1,0 +1,41 @@
+.app-footer {
+    background: var(--color-bg-card);
+    border-top: 1px solid var(--color-border);
+    padding: 20px 0;
+    margin-top: auto;
+    text-align: center;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-links a {
+    color: var(--color-text-main);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--color-accent);
+}
+
+@media (min-width: 768px) {
+    .footer-content {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0 20px;
+    }
+}

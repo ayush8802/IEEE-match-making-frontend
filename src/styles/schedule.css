@@ -1,0 +1,83 @@
+.schedule-container {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: var(--color-bg-page);
+  padding: 30px;
+  color: var(--color-text-main);
+  min-height: 100vh;
+}
+
+h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  color: var(--color-accent);
+}
+
+.schedule-day {
+  margin-bottom: 35px;
+}
+
+.day-label {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--color-text-main);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 6px;
+}
+
+.session {
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px var(--color-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  border-left: 4px solid transparent;
+  border: 1px solid var(--color-border);
+}
+
+.session:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px var(--color-shadow);
+  background: var(--color-bg-card);
+}
+
+.session-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--color-text-main);
+}
+
+.session-time {
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+  margin-bottom: 4px;
+}
+
+.session-location {
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+  opacity: 0.8;
+}
+
+/* Highlight recommended sessions */
+.session.recommended {
+  background: #FFF8E6;
+  /* Light orange tint */
+  border-left: 5px solid var(--color-accent);
+  color: var(--color-text-main);
+}
+
+.session.recommended .session-title {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.3rem;
+  padding: 50px;
+  color: var(--color-accent);
+}

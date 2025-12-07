@@ -1,0 +1,356 @@
+/* === Auth Container === */
+/* Ensure full width and vertical stacking */
+.auth-wrapper {
+  display: flex;
+  flex-direction: column;
+  /* Stack Hero part and How It Works part */
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  /* Adjust for navbar/footer */
+  background: var(--color-bg-page);
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  padding: 40px 20px;
+  gap: 60px;
+  /* Space between hero and next section */
+}
+
+/* Landing Page Layout */
+
+
+/* Landing Content Grid */
+.landing-content {
+  display: flex;
+  flex-direction: row;
+  gap: 80px;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Hero Section */
+.landing-hero {
+  flex: 1;
+  color: var(--color-text-main);
+}
+
+.landing-hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 25px;
+  line-height: 1.2;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-text-main));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--color-text-light);
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+.hero-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hero-features li {
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* === Auth Card === */
+.auth-card {
+  flex: 0 0 400px;
+  /* Fixed width for card */
+  background: var(--color-bg-card);
+  border-radius: 20px;
+  padding: 40px 35px 35px;
+  width: 100%;
+  box-shadow: 0 20px 50px var(--color-shadow);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: floatCard 1s ease;
+  position: relative;
+  z-index: 10;
+}
+
+@keyframes floatCard {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.auth-card .auth-title {
+  color: var(--color-accent);
+  font-size: 2rem;
+  margin-bottom: 25px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* === Tab Toggle === */
+.auth-card .tab-toggle {
+  display: flex;
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.auth-card .tab-toggle button {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-light);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-card .tab-toggle button.active {
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(130, 94, 52, 0.2);
+}
+
+/* === Form === */
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.auth-card form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-input-bg);
+  color: var(--color-text-main);
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card form input:focus {
+  border-color: var(--color-accent);
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 4px rgba(212, 126, 48, 0.1);
+}
+
+.auth-card form input::placeholder {
+  color: var(--color-text-light);
+  opacity: 0.6;
+}
+
+/* === Form Button === */
+.submit-btn-primary {
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: var(--color-accent);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin-top: 10px;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+}
+
+.submit-btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.submit-btn-primary:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212, 126, 48, 0.25);
+}
+
+/* === Password Toggle & Forgot Pwd === */
+.show-password-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  margin-top: -4px;
+}
+
+.show-password-wrapper input {
+  width: auto !important;
+  margin: 0;
+}
+
+.forgot-password {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+/* === Footer Links === */
+.auth-footer {
+  margin-top: 25px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.toggle-text {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+}
+
+.toggle-link {
+  color: var(--color-accent);
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: 5px;
+}
+
+.toggle-link:hover {
+  text-decoration: underline;
+  color: var(--color-accent-hover);
+}
+
+/* === Responsive Design === */
+@media (max-width: 900px) {
+  .landing-content {
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .landing-hero {
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .landing-hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    margin: 0 auto 30px;
+  }
+
+  .hero-features {
+    align-items: center;
+  }
+
+  .auth-card {
+    max-width: 450px;
+    flex: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-hero h1 {
+    font-size: 2rem;
+  }
+
+  .auth-card {
+    padding: 30px 20px;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+  }
+}
+
+
+
+
+/* === Landing Sections (How it works) === */
+.landing-sections {
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 40px;
+}
+
+.how-it-works h3 {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--color-text-main);
+  margin-bottom: 40px;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.step-card {
+  background: var(--color-bg-card);
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  text-align: center;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  transition: transform 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-5px);
+}
+
+.step-icon {
+  width: 50px;
+  height: 50px;
+  background: var(--color-accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 auto 20px;
+}
+
+.step-card h4 {
+  color: var(--color-text-main);
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.step-card p {
+  color: var(--color-text-light);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
