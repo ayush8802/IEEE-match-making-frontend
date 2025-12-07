@@ -61,11 +61,16 @@ export default function Chat() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
+            // Fetch messages where (sender=Me AND receiver=Them) OR (receiver=Me AND sender=Them)
+            // Using logic: sender_id.eq.myID,receiver_email.eq.theirEmail OR receiver_email.eq.myEmail,sender_email.eq.theirEmail
+            // Since we don't know "my email" inside the query easily without fetching it, let's fetch my email first.
+            // Actually, we can just use the auth user's email if available.
+            const myEmail = user.email;
+
             const { data, error } = await supabase
                 .from("messages")
                 .select("*")
-                .eq("sender_id", user.id)
-                .eq("receiver_email", activeUser.Email)
+                .or(`and(sender_id.eq.${user.id},receiver_email.eq."${activeUser.Email}"),and(receiver_email.eq."${myEmail}",sender_email.eq."${activeUser.Email}")`)
                 .order("created_at", { ascending: true });
 
             if (error) {
@@ -74,7 +79,7 @@ export default function Chat() {
                 const dbMessages = (data || []).map(msg => ({
                     id: msg.id,
                     text: msg.content,
-                    sender: 'me',
+                    sender: msg.sender_id === user.id ? 'me' : 'them',
                     timestamp: msg.created_at
                 }));
                 setMessages(dbMessages);
@@ -112,6 +117,7 @@ export default function Chat() {
             .from("messages")
             .insert({
                 sender_id: user.id,
+                sender_email: user.email, // Include sender email
                 receiver_email: activeUser.Email,
                 content: text
             });
@@ -120,17 +126,6 @@ export default function Chat() {
             console.error("Error sending message:", error);
             alert("Failed to save message to database");
         }
-
-        // Simulate reply (Local only)
-        setTimeout(() => {
-            const reply = {
-                id: Date.now() + 1,
-                text: "Thanks for reaching out! (Auto-reply: This message is not saved to DB)",
-                sender: 'them',
-                timestamp: new Date().toISOString()
-            };
-            setMessages(prev => [...prev, reply]);
-        }, 1000);
     };
 
     if (loading) return <div className="loading-spinner">Loading chat...</div>;
@@ -150,3 +145,4 @@ export default function Chat() {
         </div>
     );
 }
+

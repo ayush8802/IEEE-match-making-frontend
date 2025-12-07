@@ -19,6 +19,8 @@ export default function Questionnaire() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [isViewMode, setIsViewMode] = useState(false);
+
     const isShortTextType = (t) =>
         t === "short-text" || t === "short text" || t === "shorttext";
 
@@ -30,19 +32,20 @@ export default function Questionnaire() {
         return combined;
     };
 
-    function LikertInline({ name, value, onChange }) {
+    function LikertInline({ name, value, onChange, readOnly = false }) {
         return (
             <div className="likert-inline">
                 {[1, 2, 3, 4, 5].map((n) => {
                     const isSelected = Number(value) === n;
                     return (
-                        <label key={n} className={`likert-label ${isSelected ? "selected" : ""}`}>
+                        <label key={n} className={`likert-label ${isSelected ? "selected" : ""} ${readOnly ? "readonly" : ""}`}>
                             <input
                                 type="radio"
                                 name={name}
                                 value={n}
                                 checked={isSelected}
-                                onChange={() => onChange(n)}
+                                onChange={() => !readOnly && onChange && onChange(n)}
+                                disabled={readOnly}
                             />
                             <span className="likert-value">{n}</span>
                         </label>
@@ -169,6 +172,7 @@ export default function Questionnaire() {
                     }
                     prefill.linkedin_url = data.linkedin_url || "";
                     setFormData(prefill);
+                    setIsViewMode(true); // Enable View Mode if data exists
                 }
                 // If no data exists, formData remains empty (new user) - no error needed
             } catch (error) {
@@ -244,6 +248,7 @@ export default function Questionnaire() {
             // Submit using service
             await saveQuestionnaire(answersPayload);
             alert("✅ Submitted successfully!");
+            setIsViewMode(true); // Switch to View Mode after submit
         } catch (err) {
             console.error("Submit error:", err);
             alert("Submit failed: " + err.message);
@@ -254,6 +259,77 @@ export default function Questionnaire() {
 
     if (isLoading) {
         return <LoadingSpinner message="Loading questionnaire..." />;
+    }
+
+    // View Mode Rendering
+    if (isViewMode) {
+        return (
+            <div className="questionnaire-container">
+                <div className="section-card">
+                    <h2>Your Saved Response</h2>
+                    <p style={{ marginBottom: '20px', color: 'var(--color-text-light)' }}>
+                        You have already submitted a questionnaire. You can view your answers below or click "Edit" to make changes.
+                    </p>
+
+                    {sections.map((sec, sIdx) => (
+                        <div key={sIdx} className="summary-section" style={{ marginBottom: '32px', borderBottom: '1px solid var(--color-border)', paddingBottom: '16px' }}>
+                            <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: 'var(--color-accent)' }}>{sec.section}</h3>
+                            {sec.items.map((q, qIdx) => {
+                                let content = null;
+
+                                if (q.type === "top-3-collab-topics") {
+                                    const topics = formData[q.key] || [];
+                                    if (topics.length === 0) content = <span style={{ fontStyle: 'italic', color: 'var(--color-text-light)' }}>No topics added</span>;
+                                    else {
+                                        content = topics.map((t, i) => (
+                                            <div key={i} style={{ marginBottom: '8px', paddingLeft: '12px', borderLeft: '2px solid var(--color-border)' }}>
+                                                <div><strong>Topic:</strong> {t.topic}</div>
+                                                <div style={{ fontSize: '0.9rem', color: 'var(--color-text-light)' }}>
+                                                    Expertise: {t.expertise}/5 | Interest: {t.interest}/5 | {t.need_have_both}
+                                                </div>
+                                            </div>
+                                        ));
+                                    }
+                                } else if (q.type === "special-research-questions") {
+                                    const items = [];
+                                    for (let i = 1; i <= 3; i++) {
+                                        const qt = formData[`${q.key}_q${i}`];
+                                        if (qt) {
+                                            items.push(
+                                                <div key={i} style={{ marginBottom: '8px', paddingLeft: '12px', borderLeft: '2px solid var(--color-border)' }}>
+                                                    <div><strong>Q{i}:</strong> {qt}</div>
+                                                    <div style={{ fontSize: '0.9rem', color: 'var(--color-text-light)' }}>
+                                                        Readiness: {formData[`${q.key}_q${i}_readiness`] || 0}/5 | Priority: {formData[`${q.key}_q${i}_priority`] || 0}/5
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                    }
+                                    content = items.length > 0 ? items : <span style={{ fontStyle: 'italic', color: 'var(--color-text-light)' }}>No questions answered</span>;
+                                } else {
+                                    // Simple types
+                                    const val = formData[q.key];
+                                    if (!val) content = <span style={{ fontStyle: 'italic', color: 'var(--color-text-light)' }}>Not answered</span>;
+                                    else if (Array.isArray(val)) content = val.join(", ");
+                                    else content = val.toString();
+                                }
+
+                                return (
+                                    <div key={qIdx} style={{ marginBottom: '16px' }}>
+                                        <strong style={{ display: 'block', marginBottom: '4px', fontSize: '0.95rem' }}>{q.question}</strong>
+                                        <div style={{ color: 'var(--color-text-main)' }}>{content}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ))}
+
+                    <div className="nav-buttons">
+                        <button className="submit-btn" onClick={() => setIsViewMode(false)}>Edit Response</button>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     const section = sections[sectionIndex];

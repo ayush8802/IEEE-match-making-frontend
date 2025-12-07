@@ -267,7 +267,7 @@ export default function ResearcherRecommendation() {
                       borderRadius: "6px",
                       cursor: "pointer",
                       fontWeight: "600",
-                      marginLeft: "auto"
+                      fontWeight: "600"
                     }}
                   >
                     Message
