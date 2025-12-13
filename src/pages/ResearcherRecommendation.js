@@ -1,312 +1,221 @@
-// import React, { useEffect, useState } from "react";
-// import { supabase } from "../supabaseClient";
-// import "../styles/researcher.css";
-
-// export default function ResearcherRecommendation() {
-//   const [mutualItems, setMutualItems] = useState([]);
-//   const [chatgptItems, setChatgptItems] = useState([]);
-//   const [anthropicItems, setAnthropicItems] = useState([]);
-//   const [lamaItems, setLamaItems] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [user, setUser] = useState(null);
-
-//   useEffect(() => {
-//     const getUser = async () => {
-//       const { data, error } = await supabase.auth.getUser();
-//       if (error) {
-//         console.error("Error getting user:", error);
-//         setLoading(false);
-//         return;
-//       }
-//       if (data?.user) {
-//         setUser(data.user);
-//         fetchRecommendations(data.user.id);
-//       } else {
-//         console.log("No user logged in");
-//         setLoading(false);
-//       }
-//     };
-//     getUser();
-//   }, []);
-
-//   const fetchRecommendations = async (userId) => {
-//     const { data, error } = await supabase
-//       .from("questionnaire_responses")
-//       .select("mutual_recommendation, Chatgpt_recommendation, anthropic_recommendation, lama_recommendation")
-//       .eq("user_id", userId)
-//       .single();
-
-//     if (error) {
-//       console.error("Error fetching recommendations:", error);
-//       setLoading(false);
-//       return;
-//     }
-
-//     const parseJSON = (value) => {
-//       if (!value) return [];
-//       if (Array.isArray(value)) return value;
-//       try {
-//         const parsed = typeof value === "string" ? JSON.parse(value) : value;
-//         return Array.isArray(parsed) ? parsed : [];
-//       } catch (err) {
-//         console.error("Error parsing JSON:", err);
-//         return [];
-//       }
-//     };
-
-//     setMutualItems(parseJSON(data.mutual_recommendation));
-//     setChatgptItems(parseJSON(data.Chatgpt_recommendation));
-//     setAnthropicItems(parseJSON(data.anthropic_recommendation));
-//     setLamaItems(parseJSON(data.lama_recommendation));
-//     setLoading(false);
-//   };
-
-//   const renderCards = (title, items) => {
-//     const safeItems = Array.isArray(items) ? items : [];
-//     return (
-//       <div className="recommendation-section">
-//         <h2>{title}</h2>
-//         {safeItems.length === 0 ? (
-//           <p>No recommendations found for this section.</p>
-//         ) : (
-//           <div className="card-container">
-//             {safeItems.map((item, idx) => (
-//               <article className="card" key={item.id || idx}>
-//                 <div className="card-head">
-//                   <img
-//                     className="avatar"
-//                     src={item.photo && item.photo !== "not found" ? item.photo : "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"}
-//                     alt={item.name || "Researcher"}
-//                   />
-//                   <div className="card-info">
-//                     <h3>{item.name}</h3>
-//                     <div className="field">{item.field}</div>
-//                   </div>
-//                 </div>
-//                 <p className="summary">{item.summary}</p>
-//                 {item.why && item.why.length > 0 && (
-//                   <div className="why-attend">
-//                     <h4>Why to meet?</h4>
-//                     <ul>
-//                       {item.why.map((w, i) => (
-//                         <li key={i}>{w}</li>
-//                       ))}
-//                     </ul>
-//                   </div>
-//                 )}
-//                 <div className="card-footer">
-//                   <span>
-//                     Email:{" "}
-//                     {item.Email ? (
-//                       <a href={`mailto:${item.Email}`} style={{ fontWeight: "bold", textDecoration: "none", color: "#e2e8f0" }}>
-//                         {item.Email}
-//                       </a>
-//                     ) : (
-//                       <strong>Email not available</strong>
-//                     )}
-//                   </span>
-//                 </div>
-//               </article>
-//             ))}
-//           </div>
-//         )}
-//       </div>
-//     );
-//   };
-
-//   if (loading) return <p className="loading">Loading recommendations...</p>;
-//   if (!user) return <p>Please log in to view your recommendations.</p>;
-
-//   return (
-//     <div className="researcher-page">
-//       {renderCards("Mutual Recommendations", mutualItems)}
-//       {renderCards("ChatGPT Recommendations", chatgptItems)}
-//       {renderCards("Anthropic Recommendations", anthropicItems)}
-//       {renderCards("Llama Recommendations", lamaItems)}
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**
+ * Researcher Recommendation Page
+ * Displays recommended researchers based on questionnaire responses
+ * Includes Mutual, ChatGPT, Anthropic, and Llama recommendations
+ */
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "../config/supabase";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "../styles/researcher.css";
 
 export default function ResearcherRecommendation() {
-  const navigate = useNavigate();
-  const [mutualItems, setMutualItems] = useState([]);
-  const [chatgptItems, setChatgptItems] = useState([]);
-  const [anthropicItems, setAnthropicItems] = useState([]);
-  const [lamaItems, setLamaItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+    const [mutualItems, setMutualItems] = useState([]);
+    const [chatgptItems, setChatgptItems] = useState([]);
+    const [anthropicItems, setAnthropicItems] = useState([]);
+    const [lamaItems, setLamaItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error getting user:", error);
+    /**
+     * Fetch user and recommendations on component mount
+     */
+    useEffect(() => {
+        const getUser = async () => {
+            const { data, error } = await supabase.auth.getUser();
+            if (error) {
+                console.error("Error getting user:", error);
+                setLoading(false);
+                return;
+            }
+            if (data?.user) {
+                setUser(data.user);
+                fetchRecommendations(data.user.id);
+            } else {
+                console.log("No user logged in");
+                setLoading(false);
+            }
+        };
+        getUser();
+    }, []);
+
+    /**
+     * Fetch recommendations from questionnaire_responses table
+     * @param {string} userId - The authenticated user's ID
+     */
+    const fetchRecommendations = async (userId) => {
+        const { data, error } = await supabase
+            .from("questionnaire_responses")
+            .select("mutual_recommendation, Chatgpt_recommendation, anthropic_recommendation, lama_recommendation")
+            .eq("user_id", userId)
+            .single();
+
+        if (error) {
+            console.error("Error fetching recommendations:", error);
+            setLoading(false);
+            return;
+        }
+
+        /**
+         * Parse JSON recommendation data safely
+         * @param {any} value - The value to parse (string, array, or object)
+         * @returns {Array} - Parsed array or empty array on error
+         */
+        const parseJSON = (value) => {
+            if (!value) return [];
+            if (Array.isArray(value)) return value;
+            try {
+                const parsed = typeof value === "string" ? JSON.parse(value) : value;
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (err) {
+                console.error("Error parsing JSON:", err);
+                return [];
+            }
+        };
+
+        setMutualItems(parseJSON(data.mutual_recommendation));
+        setChatgptItems(parseJSON(data.Chatgpt_recommendation));
+        setAnthropicItems(parseJSON(data.anthropic_recommendation));
+        setLamaItems(parseJSON(data.lama_recommendation));
         setLoading(false);
-        return;
-      }
-      if (data?.user) {
-        setUser(data.user);
-        fetchRecommendations(data.user.id);
-      } else {
-        console.log("No user logged in");
-        setLoading(false);
-      }
     };
-    getUser();
-  }, []);
 
-  const fetchRecommendations = async (userId) => {
-    const { data, error } = await supabase
-      .from("questionnaire_responses")
-      .select("mutual_recommendation, Chatgpt_recommendation, anthropic_recommendation, lama_recommendation")
-      .eq("user_id", userId)
-      .single();
+    /**
+     * Render recommendation cards for a section
+     * @param {string} title - Section title
+     * @param {Array} items - Array of researcher recommendation objects
+     * @returns {JSX.Element} - Rendered section with cards
+     */
+    const renderCards = (title, items) => {
+        const safeItems = Array.isArray(items) ? items : [];
+        return (
+            <div className="recommendation-section">
+                <h2>{title}</h2>
+                {safeItems.length === 0 ? (
+                    <p>No recommendations found for this section.</p>
+                ) : (
+                    <div className="card-container">
+                        {safeItems.map((item, idx) => (
+                            <article className="card" key={item.id || idx}>
+                                <div className="card-head">
+                                    <img
+                                        className="avatar"
+                                        src={
+                                            item.photo && item.photo !== "not found"
+                                                ? item.photo
+                                                : "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                                        }
+                                        alt={item.name || "Researcher"}
+                                    />
+                                    <div className="card-info">
+                                        <h3>{item.name}</h3>
+                                        <div className="field">{item.field}</div>
+                                    </div>
+                                </div>
+                                <p className="summary" style={{ textAlign: "justify" }}>
+                                    {item.summary}
+                                </p>
+                                {item.why && item.why.length > 0 && (
+                                    <div className="why-attend">
+                                        <h4>Why to meet?</h4>
+                                        <ul>
+                                            {item.why.map((w, i) => (
+                                                <li key={i}>{w}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                <div className="card-footer">
+                                    <span>
+                                        Email:{" "}
+                                        {item.Email ? (
+                                            <a
+                                                href={`mailto:${item.Email}`}
+                                                style={{
+                                                    fontWeight: "bold",
+                                                    textDecoration: "none",
+                                                    color: "#e2e8f0",
+                                                }}
+                                            >
+                                                {item.Email}
+                                            </a>
+                                        ) : (
+                                            <strong>Email not available</strong>
+                                        )}
+                                    </span>
+                                    <button
+                                        onClick={() =>
+                                            navigate("/chat", { state: { selectedUser: item } })
+                                        }
+                                        className="message-btn"
+                                        style={{
+                                            background: "var(--color-accent)",
+                                            color: "white",
+                                            border: "none",
+                                            padding: "8px 16px",
+                                            borderRadius: "6px",
+                                            cursor: "pointer",
+                                            fontWeight: "600",
+                                        }}
+                                    >
+                                        Message
+                                    </button>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
 
-    if (error) {
-      console.error("Error fetching recommendations:", error);
-      setLoading(false);
-      return;
+    /**
+     * Render "Coming Soon" placeholder for sections not yet available
+     * @param {string} title - Section title
+     * @returns {JSX.Element} - Placeholder section
+     */
+    const renderComingSoon = (title) => {
+        return (
+            <div className="recommendation-section">
+                <h2>{title}</h2>
+                <div
+                    style={{
+                        textAlign: "center",
+                        padding: "3rem 1rem",
+                        fontSize: "1.5rem",
+                        color: "#94a3b8",
+                        fontWeight: "500",
+                    }}
+                >
+                    Coming Soon
+                </div>
+            </div>
+        );
+    };
+
+    // Loading state
+    if (loading) {
+        return <LoadingSpinner message="Loading recommendations..." />;
     }
 
-    const parseJSON = (value) => {
-      if (!value) return [];
-      if (Array.isArray(value)) return value;
-      try {
-        const parsed = typeof value === "string" ? JSON.parse(value) : value;
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (err) {
-        console.error("Error parsing JSON:", err);
-        return [];
-      }
-    };
+    // No user state
+    if (!user) {
+        return (
+            <div style={{ padding: "2rem", textAlign: "center" }}>
+                Please log in to view your recommendations.
+            </div>
+        );
+    }
 
-    setMutualItems(parseJSON(data.mutual_recommendation));
-    setChatgptItems(parseJSON(data.Chatgpt_recommendation));
-    setAnthropicItems(parseJSON(data.anthropic_recommendation));
-    setLamaItems(parseJSON(data.lama_recommendation));
-    setLoading(false);
-  };
-
-  const renderCards = (title, items) => {
-    const safeItems = Array.isArray(items) ? items : [];
+    // Main render
     return (
-      <div className="recommendation-section">
-        <h2>{title}</h2>
-        {safeItems.length === 0 ? (
-          <p>No recommendations found for this section.</p>
-        ) : (
-          <div className="card-container">
-            {safeItems.map((item, idx) => (
-              <article className="card" key={item.id || idx}>
-                <div className="card-head">
-                  <img
-                    className="avatar"
-                    src={item.photo && item.photo !== "not found" ? item.photo : "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"}
-                    alt={item.name || "Researcher"}
-                  />
-                  <div className="card-info">
-                    <h3>{item.name}</h3>
-                    <div className="field">{item.field}</div>
-                  </div>
-                </div>
-                <p className="summary" style={{ textAlign: "justify" }}>{item.summary}</p>
-                {item.why && item.why.length > 0 && (
-                  <div className="why-attend">
-                    <h4>Why to meet?</h4>
-                    <ul>
-                      {item.why.map((w, i) => (
-                        <li key={i}>{w}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                <div className="card-footer">
-                  <span>
-                    Email:{" "}
-                    {item.Email ? (
-                      <a href={`mailto:${item.Email}`} style={{ fontWeight: "bold", textDecoration: "none", color: "#e2e8f0" }}>
-                        {item.Email}
-                      </a>
-                    ) : (
-                      <strong>Email not available</strong>
-                    )}
-                  </span>
-                  <button
-                    onClick={() => navigate("/chat", { state: { selectedUser: item } })}
-                    className="message-btn"
-                    style={{
-                      background: "var(--color-accent)",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      fontWeight: "600",
-                      fontWeight: "600"
-                    }}
-                  >
-                    Message
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderComingSoon = (title) => {
-    return (
-      <div className="recommendation-section">
-        <h2>{title}</h2>
-        <div style={{
-          textAlign: "center",
-          padding: "3rem 1rem",
-          fontSize: "1.5rem",
-          color: "#94a3b8",
-          fontWeight: "500"
-        }}>
-          Coming Soon
+        <div className="researcher-page">
+            {renderCards("Mutual Recommendations", mutualItems)}
+            {renderCards("ChatGPT Recommendations", chatgptItems)}
+            {renderCards("Anthropic Recommendations", anthropicItems)}
+            {renderComingSoon("Llama Recommendations")}
         </div>
-      </div>
     );
-  };
-
-  if (loading) return <p className="loading">Loading recommendations...</p>;
-  if (!user) return <p>Please log in to view your recommendations.</p>;
-
-  return (
-    <div className="researcher-page">
-      {renderCards("Mutual Recommendations", mutualItems)}
-      {renderCards("ChatGPT Recommendations", chatgptItems)}
-      {renderCards("Anthropic Recommendations", anthropicItems)}
-      {renderComingSoon("Llama Recommendations")}
-    </div>
-  );
 }

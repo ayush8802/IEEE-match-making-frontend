@@ -1,0 +1,298 @@
+/**
+ * Privacy Policy Page Styles
+ * Enhanced UI with improved typography, spacing, and readability
+ */
+
+.privacy-policy-page,
+.terms-of-use-page {
+    min-height: calc(100vh - 200px);
+    padding: 3rem 1rem;
+    background: var(--color-bg-page);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.privacy-policy-container,
+.terms-of-use-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--color-bg-card);
+    border-radius: 20px;
+    padding: 3.5rem;
+    box-shadow: 0 8px 24px var(--color-shadow);
+    border: 1px solid var(--color-border);
+    line-height: 1.8;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative accent line */
+.privacy-policy-container::before,
+.terms-of-use-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-hover));
+}
+
+.privacy-policy-container h1,
+.terms-of-use-container h1 {
+    margin-bottom: 0.5rem;
+    color: var(--color-text-main);
+    font-size: 2.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0;
+}
+
+.privacy-policy-container h1::before {
+    content: "🔒";
+    font-size: 2.5rem;
+}
+
+.terms-of-use-container h1::before {
+    content: "📋";
+    font-size: 2.5rem;
+}
+
+.last-updated {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    margin-bottom: 3rem;
+    font-style: italic;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.last-updated::before {
+    content: "📅";
+    font-size: 1rem;
+}
+
+.policy-section,
+.terms-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+    animation: slideIn 0.6s ease;
+    animation-fill-mode: both;
+}
+
+.policy-section:nth-child(2) { animation-delay: 0.1s; }
+.policy-section:nth-child(3) { animation-delay: 0.2s; }
+.policy-section:nth-child(4) { animation-delay: 0.3s; }
+.policy-section:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.policy-section:last-child,
+.terms-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.policy-section h2,
+.terms-section h2 {
+    color: var(--color-accent);
+    font-size: 1.875rem;
+    margin-bottom: 1.25rem;
+    margin-top: 2.5rem;
+    font-weight: 700;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--color-accent);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+}
+
+.policy-section h2::before,
+.terms-section h2::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(212, 126, 48, 0.2);
+}
+
+.policy-section h3,
+.terms-section h3 {
+    color: var(--color-text-main);
+    font-size: 1.375rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.policy-section h3::before,
+.terms-section h3::before {
+    content: "▸";
+    color: var(--color-accent);
+    font-size: 1rem;
+}
+
+.policy-section p,
+.terms-section p {
+    color: var(--color-text-main);
+    margin-bottom: 1.25rem;
+    font-size: 1.05rem;
+    line-height: 1.85;
+}
+
+.policy-section ul,
+.terms-section ul {
+    margin-left: 1.75rem;
+    margin-bottom: 1.5rem;
+    padding-left: 0.5rem;
+}
+
+.policy-section li,
+.terms-section li {
+    color: var(--color-text-main);
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.policy-section li::before,
+.terms-section li::before {
+    content: "•";
+    color: var(--color-accent);
+    font-weight: bold;
+    position: absolute;
+    left: -1rem;
+    font-size: 1.2rem;
+}
+
+.policy-section strong,
+.terms-section strong {
+    color: var(--color-text-main);
+    font-weight: 600;
+    background: linear-gradient(120deg, transparent 0%, rgba(212, 126, 48, 0.1) 50%, transparent 100%);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+}
+
+.policy-section a,
+.terms-section a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    padding: 0.1rem 0.2rem;
+    border-radius: 4px;
+}
+
+.policy-section a:hover,
+.terms-section a:hover {
+    background: rgba(212, 126, 48, 0.1);
+    border-bottom-color: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+/* Highlight important sections */
+.policy-section:first-of-type,
+.terms-section:first-of-type {
+    background: linear-gradient(135deg, rgba(212, 126, 48, 0.05) 0%, transparent 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(212, 126, 48, 0.2);
+    margin-bottom: 3rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .privacy-policy-page,
+    .terms-of-use-page {
+        padding: 2rem 1rem;
+    }
+
+    .privacy-policy-container,
+    .terms-of-use-container {
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+    }
+
+    .privacy-policy-container h1,
+    .terms-of-use-container h1 {
+        font-size: 2rem;
+    }
+
+    .privacy-policy-container h1::before,
+    .terms-of-use-container h1::before {
+        font-size: 1.75rem;
+    }
+
+    .policy-section h2,
+    .terms-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .policy-section h3,
+    .terms-section h3 {
+        font-size: 1.25rem;
+    }
+
+    .policy-section p,
+    .terms-section p,
+    .policy-section li,
+    .terms-section li {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .privacy-policy-container,
+    .terms-of-use-container {
+        padding: 1.5rem;
+    }
+
+    .privacy-policy-container h1,
+    .terms-of-use-container h1 {
+        font-size: 1.75rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .policy-section,
+    .terms-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+    }
+}

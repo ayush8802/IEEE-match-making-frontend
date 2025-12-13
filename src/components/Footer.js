@@ -1,4 +1,10 @@
+/**
+ * Footer Component
+ * Displays footer with links to Privacy Policy, Terms of Use, and Contact Support
+ */
+
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 export default function Footer() {
@@ -7,9 +13,9 @@ export default function Footer() {
             <div className="footer-content">
                 <p>&copy; {new Date().getFullYear()} IEEE Matchmaking Platform. All rights reserved.</p>
                 <div className="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Contact Support</a>
+                    <Link to="/privacy-policy">Privacy Policy</Link>
+                    <Link to="/terms-of-use">Terms of Use</Link>
+                    <Link to="/contact">Contact Support</Link>
                 </div>
             </div>
         </footer>

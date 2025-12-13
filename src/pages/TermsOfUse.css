@@ -1,0 +1,10 @@
+/**
+ * Terms of Use Page Styles
+ * Uses shared styles from PrivacyPolicy.css with minor customizations
+ */
+
+@import "./PrivacyPolicy.css";
+
+.terms-of-use-container h1::before {
+    content: "📋";
+}

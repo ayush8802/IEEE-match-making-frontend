@@ -1,0 +1,23 @@
+/* TypingIndicator.css */
+
+.typing-indicator {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+    color: #555;
+    animation: fadeIn 0.3s ease;
+}
+
+.typing-user {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

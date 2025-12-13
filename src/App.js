@@ -15,6 +15,9 @@ import Chat from "./pages/Chat";
 import SessionRecommendation from "./pages/SessionRecommendation";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import ResetPassword from "./pages/ResetPassword";
+import ContactSupport from "./pages/ContactSupport";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
 import Footer from "./components/Footer";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -41,6 +44,9 @@ function AppRoutes() {
                             <Route path="/" element={<LoginSignup />} />
                             <Route path="/forgot-password" element={<ForgotPasswordEmail />} />
                             <Route path="/reset-password" element={<ResetPassword />} />
+                            <Route path="/contact" element={<ContactSupport />} />
+                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                            <Route path="/terms-of-use" element={<TermsOfUse />} />
                             {/* Redirect unknown paths to login */}
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </>
@@ -80,6 +86,10 @@ function AppRoutes() {
                                     </ProtectedRoute>
                                 }
                             />
+                            {/* Public routes accessible when logged in */}
+                            <Route path="/contact" element={<ContactSupport />} />
+                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                            <Route path="/terms-of-use" element={<TermsOfUse />} />
                             {/* Redirect unknown paths to questionnaire */}
                             <Route path="*" element={<Navigate to="/questionnaire" replace />} />
                         </>
