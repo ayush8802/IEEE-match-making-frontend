@@ -104,14 +104,20 @@ export default function ChatWindow({ activeUser, messages = [], currentUser, onS
         });
 
         // Listen for blocked messages from backend
-        socket.on("message_blocked", ({ reason, content }) => {
+        const handleMessageBlocked = ({ reason, content }) => {
             console.warn("🚫 Message blocked in ChatWindow", { reason, content });
-            setModerationWarning({ reason, content });
+            setModerationWarning({ 
+                reason: reason || "This message violates community guidelines.",
+                content: content || ""
+            });
             // Auto-hide warning after 10 seconds
             setTimeout(() => {
                 setModerationWarning(null);
             }, 10000);
-        });
+        };
+        
+        socket.on("message_blocked", handleMessageBlocked);
+        console.log("✅ ChatWindow: message_blocked listener registered");
 
         // Cleanup on unmount
         return () => {
@@ -126,10 +132,10 @@ export default function ChatWindow({ activeUser, messages = [], currentUser, onS
                 socketRef.current = null;
             } else if (socket) {
                 // Just remove listeners if socket was provided (don't disconnect)
-                socket.removeAllListeners("typing_status");
-                socket.removeAllListeners("message_status_update");
-                socket.removeAllListeners("messages_read");
-                socket.removeAllListeners("message_blocked");
+                socket.removeListener("typing_status", socket._events?.typing_status);
+                socket.removeListener("message_status_update", socket._events?.message_status_update);
+                socket.removeListener("messages_read", socket._events?.messages_read);
+                socket.removeListener("message_blocked", handleMessageBlocked);
             }
         };
     }, [currentUser, providedSocket, activeUser]); // Include activeUser to update listeners when conversation changes
