@@ -33,6 +33,7 @@ export default function Chat() {
     const location = useLocation();
     const socketRef = useRef(null);
     const processedMessageIdsRef = useRef(new Set()); // Track processed message IDs to prevent duplicates
+    const activeConversationRef = useRef(null); // Track active conversation to avoid stale closures in socket listeners
 
     /**
      * Fetch available users from mutual recommendations
@@ -209,16 +210,19 @@ export default function Chat() {
                 const isForMeAsReceiver = msg.receiver_id === user.id || msg.receiver_email?.toLowerCase() === user.email?.toLowerCase();
                 const isFromMeAsSender = msg.sender_id === user.id || msg.sender_email?.toLowerCase() === user.email?.toLowerCase();
                 
+                // Get current active conversation from ref (avoids stale closure)
+                const currentActiveConversation = activeConversationRef.current;
+                
                 // Only process messages for the active conversation
-                const isForActiveConversation = activeConversation && (
-                    msg.conversation_id === activeConversation.conversationId ||
+                const isForActiveConversation = currentActiveConversation && (
+                    msg.conversation_id === currentActiveConversation.conversationId ||
                     (isFromMeAsSender && (
-                        activeConversation.otherUser?.email?.toLowerCase() === msg.receiver_email?.toLowerCase() ||
-                        activeConversation.otherUser?.id === msg.receiver_id
+                        currentActiveConversation.otherUser?.email?.toLowerCase() === msg.receiver_email?.toLowerCase() ||
+                        currentActiveConversation.otherUser?.id === msg.receiver_id
                     )) ||
                     (isForMeAsReceiver && (
-                        activeConversation.otherUser?.email?.toLowerCase() === msg.sender_email?.toLowerCase() ||
-                        activeConversation.otherUser?.id === msg.sender_id
+                        currentActiveConversation.otherUser?.email?.toLowerCase() === msg.sender_email?.toLowerCase() ||
+                        currentActiveConversation.otherUser?.id === msg.sender_id
                     ))
                 );
                 
@@ -355,6 +359,9 @@ export default function Chat() {
             });
         }
 
+        // Update ref when activeConversation changes
+        activeConversationRef.current = activeConversation;
+
         return () => {
             // In development, React Strict Mode causes double mount/unmount
             // Don't disconnect socket immediately, let it reconnect naturally
@@ -368,7 +375,7 @@ export default function Chat() {
                 // socketRef.current = null; // Commented out to allow reuse
             }
         };
-    }, [user]);
+    }, [user, activeConversation]); // Include activeConversation to update ref
 
     /**
      * Refresh conversations list
@@ -428,15 +435,16 @@ export default function Chat() {
      */
     useEffect(() => {
         const fetchMessages = async () => {
+            // Clear messages immediately when conversation changes
+            setMessages([]);
+            processedMessageIdsRef.current.clear(); // Clear processed IDs when conversation changes
+            
             if (!activeConversation) {
-                setMessages([]);
-                processedMessageIdsRef.current.clear(); // Clear processed IDs when no conversation
                 return;
             }
 
             // If it's an available user without a conversation, no messages yet
             if (activeConversation.isAvailableUser || !activeConversation.conversationId) {
-                setMessages([]);
                 return;
             }
 
@@ -453,44 +461,27 @@ export default function Chat() {
                     status: msg.status || "sent",
                 }));
 
-                // Merge with existing messages to avoid duplicates
-                // Use a Map to deduplicate by ID, keeping the most recent status
-                setMessages((prev) => {
-                    const messageMap = new Map();
-                    
-                    // Add existing messages first
-                    prev.forEach(msg => {
-                        if (msg.id) {
-                            messageMap.set(msg.id, msg);
-                            // Also update the processed IDs ref
-                            processedMessageIdsRef.current.add(msg.id);
-                        }
-                    });
-                    
-                    // Add/update with formatted messages from API (API is source of truth)
-                    formattedMessages.forEach(msg => {
-                        if (msg.id) {
-                            messageMap.set(msg.id, msg);
-                            // Also update the processed IDs ref
-                            processedMessageIdsRef.current.add(msg.id);
-                        }
-                    });
-                    
-                    // Convert back to array and sort by timestamp
-                    const merged = Array.from(messageMap.values()).sort((a, b) => {
-                        const timeA = new Date(a.timestamp).getTime();
-                        const timeB = new Date(b.timestamp).getTime();
-                        return timeA - timeB;
-                    });
-                    
-                    console.log("📥 [CHAT] Messages fetched and merged", {
-                        apiCount: formattedMessages.length,
-                        existingCount: prev.length,
-                        mergedCount: merged.length
-                    });
-                    
-                    return merged;
+                // Replace messages entirely (don't merge) - each conversation has its own messages
+                // Update processed IDs ref
+                formattedMessages.forEach(msg => {
+                    if (msg.id) {
+                        processedMessageIdsRef.current.add(msg.id);
+                    }
                 });
+                
+                // Sort by timestamp
+                const sortedMessages = formattedMessages.sort((a, b) => {
+                    const timeA = new Date(a.timestamp).getTime();
+                    const timeB = new Date(b.timestamp).getTime();
+                    return timeA - timeB;
+                });
+                
+                console.log("📥 [CHAT] Messages fetched for conversation", {
+                    conversationId: activeConversation.conversationId,
+                    messageCount: sortedMessages.length
+                });
+                
+                setMessages(sortedMessages);
 
                 // Mark conversation as read when opened
                 if (activeConversation.unreadCount > 0) {
